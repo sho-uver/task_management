@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Management</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- ヘッダー部分 -->
+        <header class="app-header">
+            <div class="window-controls">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="alwaysOnTop">
+                    <span class="slider"></span>
+                    <span class="label">常に最前面に表示</span>
+                </label>
+            </div>
+        </header>
+
+        <!-- メインコンテンツ -->
+        <main class="main-content">
+            <!-- タスクリスト -->
+            <section class="task-list">
+                <h2>本日のタスク</h2>
+                <div class="tasks">
+                    <!-- タスクアイテムのテンプレート -->
+                    <div class="task-item">
+                        <div class="task-content">
+                            <div class="task-status not-started">未着手</div>
+                            <div class="task-title">サンプルタスク1</div>
+                            <div class="task-time">
+                                <span class="estimated">00:30:00</span>
+                                <span class="separator">/</span>
+                                <span class="actual">00:00:00</span>
+                            </div>
+                        </div>
+                        <div class="task-controls">
+                            <button class="start-btn">開始</button>
+                            <button class="complete-btn" disabled>完了</button>
+                        </div>
+                    </div>
+
+                    <!-- 進行中のタスクサンプル -->
+                    <div class="task-item active">
+                        <div class="task-content">
+                            <div class="task-status in-progress">進行中</div>
+                            <div class="task-title">進行中のタスク</div>
+                            <div class="task-time">
+                                <span class="estimated">01:00:00</span>
+                                <span class="separator">/</span>
+                                <span class="actual">00:30:00</span>
+                            </div>
+                        </div>
+                        <div class="task-controls">
+                            <button class="pause-btn">一時停止</button>
+                            <button class="complete-btn">完了</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html> 
