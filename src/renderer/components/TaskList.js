@@ -1,46 +1,51 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { ipcRenderer } from 'electron';
 import TaskItem from './TaskItem';
 
 function TaskList() {
-  // サンプルデータ（後でNotion APIから取得するデータに置き換え）
-  const [tasks, setTasks] = useState([
-    {
-      id: 1,
-      title: 'サンプルタスク1',
-      status: 'not-started',
-      estimatedTime: '00:30:00',
-      actualTime: '00:00:00'
-    },
-    {
-      id: 2,
-      title: '進行中のタスク',
-      status: 'in-progress',
-      estimatedTime: '01:00:00',
-      actualTime: '00:30:00'
-    }
-  ]);
+  const [tasks, setTasks] = useState([]);
+
+  // 初期データの読み込み
+  useEffect(() => {
+    loadTasks();
+  }, []);
+
+  // タスクの読み込み
+  const loadTasks = async () => {
+    const savedTasks = await ipcRenderer.invoke('get-tasks');
+    setTasks(savedTasks);
+  };
+
+  // タスクの保存
+  const saveTasks = async (updatedTasks) => {
+    await ipcRenderer.invoke('save-tasks', updatedTasks);
+    setTasks(updatedTasks);
+  };
 
   // タスク操作のハンドラー
   const handleStart = (task) => {
-    setTasks(tasks.map(t => {
+    const updatedTasks = tasks.map(t => {
       if (t.id === task.id) {
         return { ...t, status: 'in-progress' };
       }
       return t;
-    }));
+    });
+    saveTasks(updatedTasks);
   };
 
   const handlePause = (task) => {
-    setTasks(tasks.map(t => {
+    const updatedTasks = tasks.map(t => {
       if (t.id === task.id) {
         return { ...t, status: 'not-started' };
       }
       return t;
-    }));
+    });
+    saveTasks(updatedTasks);
   };
 
   const handleComplete = (task) => {
-    setTasks(tasks.filter(t => t.id !== task.id));
+    const updatedTasks = tasks.filter(t => t.id !== task.id);
+    saveTasks(updatedTasks);
   };
 
   return (

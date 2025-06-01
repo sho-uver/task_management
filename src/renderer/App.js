@@ -1,12 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { ipcRenderer } from 'electron';
 import TaskList from './components/TaskList';
 
 function App() {
   const [isAlwaysOnTop, setIsAlwaysOnTop] = useState(false);
 
-  const handleAlwaysOnTopChange = (e) => {
-    setIsAlwaysOnTop(e.target.checked);
-    // TODO: Electron側と連携して実際にウィンドウを最前面に固定する処理を実装
+  // 初期設定の読み込み
+  useEffect(() => {
+    loadSettings();
+  }, []);
+
+  // 設定の読み込み
+  const loadSettings = async () => {
+    const settings = await ipcRenderer.invoke('get-settings');
+    setIsAlwaysOnTop(settings.isAlwaysOnTop);
+  };
+
+  // 設定の更新
+  const handleAlwaysOnTopChange = async (e) => {
+    const newValue = e.target.checked;
+    setIsAlwaysOnTop(newValue);
+    await ipcRenderer.invoke('update-settings', {
+      isAlwaysOnTop: newValue
+    });
   };
 
   return (

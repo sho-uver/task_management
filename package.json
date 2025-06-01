@@ -57,5 +57,8 @@
     "webpack": "^5.x",
     "webpack-cli": "^5.x",
     "webpack-dev-server": "^4.x"
+  },
+  "dependencies": {
+    "electron-store": "^10.0.1"
   }
 }
