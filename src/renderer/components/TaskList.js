@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ipcRenderer } from 'electron';
 import TaskItem from './TaskItem';
+import TaskForm from './TaskForm';
 
 function TaskList() {
   const [tasks, setTasks] = useState([]);
@@ -20,6 +21,12 @@ function TaskList() {
   const saveTasks = async (updatedTasks) => {
     await ipcRenderer.invoke('save-tasks', updatedTasks);
     setTasks(updatedTasks);
+  };
+
+  // 新規タスクの追加
+  const handleAddTask = (newTask) => {
+    const updatedTasks = [...tasks, newTask];
+    saveTasks(updatedTasks);
   };
 
   // タスク操作のハンドラー
@@ -51,6 +58,7 @@ function TaskList() {
   return (
     <section className="task-list">
       <h2>本日のタスク</h2>
+      <TaskForm onSubmit={handleAddTask} />
       <div className="tasks">
         {tasks.map(task => (
           <TaskItem
