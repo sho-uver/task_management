@@ -1,35 +1,33 @@
 import React from 'react';
 
-function TaskItem({ task, onStart, onPause, onComplete }) {
+function TaskItem({ task, onStart, onPause, onComplete, onEdit }) {
   const { title, status, estimatedTime, actualTime } = task;
+  const isInProgress = status === 'in-progress';
 
   return (
-    <div className={`task-item ${status === 'in-progress' ? 'active' : ''}`}>
+    <div className={`task-item ${isInProgress ? 'active' : ''}`}>
       <div className="task-content">
-        <div className={`task-status ${status}`}>
-          {status === 'not-started' ? '未着手' : '進行中'}
-        </div>
-        <div className="task-title">{title}</div>
+        <span className={`task-status ${status}`}>
+          {status === 'in-progress' ? '進行中' : '未着手'}
+        </span>
+        <span className="task-title">{title}</span>
         <div className="task-time">
-          <span className="estimated">{estimatedTime}</span>
+          <span>{actualTime}</span>
           <span className="separator">/</span>
-          <span className="actual">{actualTime}</span>
+          <span>{estimatedTime}</span>
         </div>
       </div>
       <div className="task-controls">
-        {status === 'not-started' ? (
-          <button className="start-btn" onClick={() => onStart(task)}>
-            開始
-          </button>
+        {!isInProgress ? (
+          <button className="start-btn" onClick={() => onStart(task)}>開始</button>
         ) : (
-          <button className="pause-btn" onClick={() => onPause(task)}>
-            一時停止
-          </button>
+          <button className="pause-btn" onClick={() => onPause(task)}>一時停止</button>
         )}
+        <button className="edit-btn" onClick={() => onEdit(task)}>編集</button>
         <button
           className="complete-btn"
           onClick={() => onComplete(task)}
-          disabled={status === 'not-started'}
+          disabled={isInProgress}
         >
           完了
         </button>

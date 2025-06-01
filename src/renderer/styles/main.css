@@ -261,4 +261,54 @@ input:checked + .slider:before {
 
 .add-button:active {
   background-color: #3d8b40;
+}
+
+/* 編集ボタンのスタイル */
+.edit-btn {
+  background-color: var(--secondary-color);
+  color: var(--text-color);
+}
+
+.save-button {
+  padding: 8px 16px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.save-button:hover {
+  background-color: #1976D2;
+}
+
+.save-button:active {
+  background-color: #0D47A1;
+}
+
+.cancel-button {
+  padding: 8px 16px;
+  background-color: #f5f5f5;
+  color: var(--text-color);
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+  margin-left: 8px;
+}
+
+.cancel-button:hover {
+  background-color: #e0e0e0;
+}
+
+.cancel-button:active {
+  background-color: #d5d5d5;
+}
+
+.form-actions {
+  display: flex;
+  align-items: center;
 } 

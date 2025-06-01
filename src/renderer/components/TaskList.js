@@ -5,6 +5,7 @@ import TaskForm from './TaskForm';
 
 function TaskList() {
   const [tasks, setTasks] = useState([]);
+  const [editingTask, setEditingTask] = useState(null);
 
   // 初期データの読み込み
   useEffect(() => {
@@ -27,6 +28,20 @@ function TaskList() {
   const handleAddTask = (newTask) => {
     const updatedTasks = [...tasks, newTask];
     saveTasks(updatedTasks);
+  };
+
+  // タスクの編集
+  const handleEditTask = (editedTask) => {
+    const updatedTasks = tasks.map(t => 
+      t.id === editedTask.id ? editedTask : t
+    );
+    saveTasks(updatedTasks);
+    setEditingTask(null);
+  };
+
+  // 編集のキャンセル
+  const handleCancelEdit = () => {
+    setEditingTask(null);
   };
 
   // タスク操作のハンドラー
@@ -58,7 +73,15 @@ function TaskList() {
   return (
     <section className="task-list">
       <h2>本日のタスク</h2>
-      <TaskForm onSubmit={handleAddTask} />
+      {editingTask ? (
+        <TaskForm
+          task={editingTask}
+          onSubmit={handleEditTask}
+          onCancel={handleCancelEdit}
+        />
+      ) : (
+        <TaskForm onSubmit={handleAddTask} />
+      )}
       <div className="tasks">
         {tasks.map(task => (
           <TaskItem
@@ -67,6 +90,7 @@ function TaskList() {
             onStart={handleStart}
             onPause={handlePause}
             onComplete={handleComplete}
+            onEdit={setEditingTask}
           />
         ))}
       </div>
