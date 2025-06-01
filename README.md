@@ -6,7 +6,9 @@
 個人開発者(とくにゲーム)
 
 ## 画面イメージ
-
+### Electronアプリケーション  
+HTMLでコードも作っています。[こちら](doc/Layout_image/electron/index.html)を確認してください    
+ ![Electronアプリケーションのレイアウト](doc/Layout_image/electron/screenshot.png)
 
 ## プラットフォーム
 - Windows
