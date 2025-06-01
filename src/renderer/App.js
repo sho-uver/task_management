@@ -1,12 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
+import TaskList from './components/TaskList';
 
 function App() {
+  const [isAlwaysOnTop, setIsAlwaysOnTop] = useState(false);
+
+  const handleAlwaysOnTopChange = (e) => {
+    setIsAlwaysOnTop(e.target.checked);
+    // TODO: Electron側と連携して実際にウィンドウを最前面に固定する処理を実装
+  };
+
   return (
     <div className="app-container">
       <header className="app-header">
         <div className="window-controls">
           <label className="toggle-switch">
-            <input type="checkbox" id="alwaysOnTop" />
+            <input
+              type="checkbox"
+              id="alwaysOnTop"
+              checked={isAlwaysOnTop}
+              onChange={handleAlwaysOnTopChange}
+            />
             <span className="slider"></span>
             <span className="label">常に最前面に表示</span>
           </label>
@@ -14,12 +27,7 @@ function App() {
       </header>
 
       <main className="main-content">
-        <section className="task-list">
-          <h2>本日のタスク</h2>
-          <div className="tasks">
-            {/* タスクリストはここに実装されます */}
-          </div>
-        </section>
+        <TaskList />
       </main>
     </div>
   );
