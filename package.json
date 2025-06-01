@@ -1,0 +1,42 @@
+{
+  "name": "task_management",
+  "version": "1.0.0",
+  "description": "タスクを管理、スケジュール、作業時間計測を行い、より開発速度を高めるためのツール",
+  "main": "src/main/main.js",
+  "directories": {
+    "doc": "doc"
+  },
+  "scripts": {
+    "start": "electron .",
+    "dev": "webpack serve --mode development",
+    "build": "webpack --mode production",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sho-uver/task_management.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sho-uver/task_management/issues"
+  },
+  "homepage": "https://github.com/sho-uver/task_management#readme",
+  "devDependencies": {
+    "@babel/core": "^7.x",
+    "@babel/preset-env": "^7.x",
+    "@babel/preset-react": "^7.x",
+    "babel-loader": "^9.x",
+    "css-loader": "^6.x",
+    "electron": "^28.x",
+    "electron-builder": "^24.x",
+    "html-webpack-plugin": "^5.x",
+    "react": "^18.x",
+    "react-dom": "^18.x",
+    "style-loader": "^3.x",
+    "webpack": "^5.x",
+    "webpack-cli": "^5.x",
+    "webpack-dev-server": "^4.x"
+  }
+}
