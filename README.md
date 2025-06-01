@@ -172,3 +172,228 @@ graph TD
    - 常駐型アプリケーションとして動作
    - シンプルな操作フローで作業記録を実現
    - 自動的なステータス管理と時間計測
+
+## クラス図（Electronパート）
+```mermaid
+classDiagram
+    %% メインアプリケーションクラス
+    class App {
+        -window: BrowserWindow
+        -tray: Tray
+        -taskManager: TaskManager
+        -timeTracker: TimeTracker
+        +initialize()
+        +createWindow()
+        +createTray()
+        +handleWindowEvents()
+    }
+
+    %% タスク管理クラス
+    class TaskManager {
+        -tasks: Task[]
+        -notionClient: NotionClient
+        +fetchTodayTasks()
+        +updateTaskStatus(taskId, status)
+        +syncWithNotion()
+    }
+
+    %% 時間計測クラス
+    class TimeTracker {
+        -activeTask: Task
+        -startTime: Date
+        -isTracking: boolean
+        -idleDetector: IdleDetector
+        +startTracking(taskId)
+        +stopTracking()
+        +getElapsedTime()
+        +handleIdleDetection()
+    }
+
+    %% タスクデータクラス
+    class Task {
+        -id: string
+        -title: string
+        -status: TaskStatus
+        -type: TaskType
+        -timeSpent: number
+        -notionPageId: string
+        +updateStatus()
+        +addTimeSpent()
+    }
+
+    %% アイドル検知クラス
+    class IdleDetector {
+        -threshold: number
+        -lastActivity: Date
+        +checkIdleStatus()
+        +resetActivity()
+        +onIdle()
+    }
+
+    %% Notionクライアントクラス
+    class NotionClient {
+        -apiKey: string
+        -databaseId: string
+        +fetchTasks()
+        +updateTask()
+        +syncTimeData()
+    }
+
+    %% 列挙型
+    class TaskStatus {
+        <<enumeration>>
+        NOT_STARTED
+        IN_PROGRESS
+        COMPLETED
+    }
+
+    class TaskType {
+        <<enumeration>>
+        REGULAR
+        SCHEDULED
+        PERIODIC
+    }
+
+    %% 関係性の定義
+    App *-- TaskManager
+    App *-- TimeTracker
+    TaskManager o-- Task
+    TaskManager --> NotionClient
+    TimeTracker --> Task
+    TimeTracker *-- IdleDetector
+    Task --> TaskStatus
+    Task --> TaskType
+```
+
+### クラス構造の説明
+1. アプリケーション構造
+   - `App`: アプリケーションのメインクラス
+     - ウィンドウとトレイの管理
+     - 他のコンポーネントの初期化と統合
+   - `TaskManager`: タスク管理の中核
+     - Notionとの同期
+     - タスクの状態管理
+   - `TimeTracker`: 時間計測の中核
+     - アイドル検知との連携
+     - 作業時間の記録
+
+2. データモデル
+   - `Task`: タスクの基本構造
+     - Notionとの連携用ID
+     - 状態と時間の管理
+   - `TaskStatus`: タスクの状態を定義
+   - `TaskType`: タスクの種類を定義
+
+3. ユーティリティ
+   - `IdleDetector`: アイドル状態の検知
+     - マウスとキーボードの監視
+     - 閾値による判定
+   - `NotionClient`: Notion APIとの通信
+     - データの同期
+     - 更新の管理
+
+## シーケンス図
+### タスク開始から計測までの流れ
+```mermaid
+sequenceDiagram
+    actor User as ユーザー
+    participant UI as ElectronUI
+    participant App as App
+    participant TM as TaskManager
+    participant TT as TimeTracker
+    participant ID as IdleDetector
+    participant NC as NotionClient
+    
+    User->>UI: タスク開始ボタンクリック
+    UI->>App: startTask(taskId)
+    App->>TM: updateTaskStatus(taskId, IN_PROGRESS)
+    TM->>NC: updateTask(taskId, status)
+    NC-->>TM: 更新完了
+    
+    App->>TT: startTracking(taskId)
+    TT->>ID: resetActivity()
+    TT->>TT: setActiveTask(taskId)
+    
+    loop 時間計測
+        ID->>ID: checkIdleStatus()
+        alt アイドル検知
+            ID->>TT: onIdle()
+            TT->>TT: pauseTracking()
+            TT->>UI: updateTimerDisplay(paused)
+        else アクティブ
+            ID->>TT: onActive()
+            TT->>TT: resumeTracking()
+            TT->>UI: updateTimerDisplay(active)
+        end
+    end
+```
+
+### タスク完了時の同期フロー
+```mermaid
+sequenceDiagram
+    actor User as ユーザー
+    participant UI as ElectronUI
+    participant App as App
+    participant TM as TaskManager
+    participant TT as TimeTracker
+    participant NC as NotionClient
+    
+    User->>UI: タスク完了ボタンクリック
+    UI->>App: completeTask(taskId)
+    
+    par 時間計測停止
+        App->>TT: stopTracking()
+        TT->>TT: calculateTotalTime()
+        TT->>App: return totalTime
+    and ステータス更新
+        App->>TM: updateTaskStatus(taskId, COMPLETED)
+    end
+    
+    App->>TM: updateTimeSpent(taskId, totalTime)
+    TM->>NC: syncTimeData(taskId, totalTime)
+    NC-->>TM: 同期完了
+    
+    TM->>UI: updateTaskList()
+    UI->>User: 完了表示
+```
+
+### アプリケーション起動時のデータ同期
+```mermaid
+sequenceDiagram
+    participant App as App
+    participant TM as TaskManager
+    participant NC as NotionClient
+    participant UI as ElectronUI
+    
+    App->>App: initialize()
+    App->>TM: initialize()
+    
+    par Notionデータ取得
+        TM->>NC: fetchTodayTasks()
+        NC-->>TM: return tasks
+        TM->>TM: processTasks()
+    and UI初期化
+        App->>UI: createWindow()
+        App->>UI: createTray()
+    end
+    
+    TM->>UI: renderTasks(tasks)
+    UI->>UI: setupEventListeners()
+```
+
+### シーケンス図の説明
+1. タスク開始から計測まで
+   - ユーザーのアクションから時間計測開始までの流れ
+   - アイドル検知の継続的なチェック
+   - UIの状態更新
+
+2. タスク完了時の同期
+   - 並行処理による効率的な完了処理
+   - Notionとのデータ同期
+   - UI更新の順序
+
+3. アプリケーション起動時
+   - 並行処理によるデータ取得とUI初期化
+   - 効率的な初期化シーケンス
+   - イベントリスナーの設定
+
