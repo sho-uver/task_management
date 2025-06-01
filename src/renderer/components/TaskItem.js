@@ -1,11 +1,22 @@
 import React from 'react';
+import { useTaskTimer } from '../hooks/useTaskTimer';
 
 function TaskItem({ task, onStart, onPause, onComplete, onEdit }) {
-  const { title, status, estimatedTime, actualTime } = task;
-  const isInProgress = status === 'in-progress';
+  const { title, status, estimatedTime } = task;
+  const { isRunning, actualTime, startTimer, stopTimer } = useTaskTimer(task);
+
+  const handleStart = () => {
+    startTimer();
+    onStart(task);
+  };
+
+  const handlePause = () => {
+    stopTimer();
+    onPause(task);
+  };
 
   return (
-    <div className={`task-item ${isInProgress ? 'active' : ''}`}>
+    <div className={`task-item ${isRunning ? 'active' : ''}`}>
       <div className="task-content">
         <span className={`task-status ${status}`}>
           {status === 'in-progress' ? '進行中' : '未着手'}
@@ -18,16 +29,16 @@ function TaskItem({ task, onStart, onPause, onComplete, onEdit }) {
         </div>
       </div>
       <div className="task-controls">
-        {!isInProgress ? (
-          <button className="start-btn" onClick={() => onStart(task)}>開始</button>
+        {!isRunning ? (
+          <button className="start-btn" onClick={handleStart}>開始</button>
         ) : (
-          <button className="pause-btn" onClick={() => onPause(task)}>一時停止</button>
+          <button className="pause-btn" onClick={handlePause}>一時停止</button>
         )}
         <button className="edit-btn" onClick={() => onEdit(task)}>編集</button>
         <button
           className="complete-btn"
           onClick={() => onComplete(task)}
-          disabled={isInProgress}
+          disabled={isRunning}
         >
           完了
         </button>

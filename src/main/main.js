@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, powerMonitor } = require('electron');
 const path = require('path');
 const store = require('./store');
 
@@ -47,6 +47,24 @@ function setupIpcHandlers(win) {
   ipcMain.handle('update-settings', (event, settings) => {
     store.set('settings', settings);
     win.setAlwaysOnTop(settings.isAlwaysOnTop);
+    return true;
+  });
+
+  // システムのアイドル時間を取得
+  ipcMain.handle('get-system-idle-time', () => {
+    return powerMonitor.getSystemIdleTime() * 1000; // 秒をミリ秒に変換
+  });
+
+  // タスクの作業時間を更新
+  ipcMain.handle('update-task-time', (event, taskId, newTime) => {
+    const tasks = store.get('tasks');
+    const updatedTasks = tasks.map(task => {
+      if (task.id === taskId) {
+        return { ...task, actualTime: newTime };
+      }
+      return task;
+    });
+    store.set('tasks', updatedTasks);
     return true;
   });
 }
