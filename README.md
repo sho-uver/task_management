@@ -418,14 +418,14 @@ sequenceDiagram
 1. プロジェクトセットアップ
    - [x] プロジェクト構造の設計
    - [x] 基本設計ドキュメントの作成
-   - [ ] 開発環境の構築（JavaScript + Electron）
-   - [ ] package.jsonの設定
-   - [ ] ビルド設定の構築
+   - [x] 開発環境の構築（JavaScript + React + Electron）
+   - [x] package.jsonの設定
+   - [x] ビルド設定の構築
 
 2. Electron基盤実装
-   - [ ] メインプロセスの実装（main.js）
-   - [ ] レンダラープロセスの実装（index.html, renderer.js）
-   - [ ] プロセス間通信の実装
+   - [x] メインプロセスの実装（main.js）
+   - [x] レンダラープロセスの基本構造実装
+   - [x] プロセス間通信の実装
    - [ ] アプリケーションのパッケージング設定
 
 ### フェーズ2: UI実装
