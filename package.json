@@ -10,7 +10,26 @@
     "start": "electron .",
     "dev": "webpack serve --mode development",
     "build": "webpack --mode production",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "build": {
+    "appId": "com.task_management.app",
+    "productName": "Task Management",
+    "directories": {
+      "output": "out"
+    },
+    "files": [
+      "dist/**/*",
+      "src/main/**/*"
+    ],
+    "win": {
+      "target": "portable"
+    },
+    "mac": {
+      "target": "dmg"
+    }
   },
   "repository": {
     "type": "git",
