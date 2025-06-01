@@ -19,10 +19,25 @@ const schema = {
   settings: {
     type: 'object',
     default: {
-      isAlwaysOnTop: false
+      isAlwaysOnTop: false,
+      window: {
+        x: undefined,
+        y: undefined,
+        width: 400,
+        height: 400
+      }
     },
     properties: {
-      isAlwaysOnTop: { type: 'boolean' }
+      isAlwaysOnTop: { type: 'boolean' },
+      window: {
+        type: 'object',
+        properties: {
+          x: { type: ['number', 'null'] },
+          y: { type: ['number', 'null'] },
+          width: { type: 'number' },
+          height: { type: 'number' }
+        }
+      }
     }
   }
 };

@@ -3,9 +3,18 @@ const path = require('path');
 const store = require('./store');
 
 function createWindow() {
+  // 保存された設定を読み込む
+  const settings = store.get('settings');
+  const windowSettings = settings.window;
+
+  // ウィンドウを作成
   const win = new BrowserWindow({
-    width: 400,
-    height: 400,
+    width: windowSettings.width,
+    height: windowSettings.height,
+    x: windowSettings.x,
+    y: windowSettings.y,
+    frame: true,
+    resizable: true,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false
@@ -20,9 +29,25 @@ function createWindow() {
     win.loadFile(path.join(__dirname, '../dist/index.html'));
   }
 
-  // 設定の読み込みと適用
-  const settings = store.get('settings');
+  // 設定の適用
   win.setAlwaysOnTop(settings.isAlwaysOnTop);
+
+  // ウィンドウの位置とサイズが変更されたときの処理
+  let saveWindowBoundsTimeout;
+  const saveWindowBounds = () => {
+    const bounds = win.getBounds();
+    store.set('settings.window', bounds);
+  };
+
+  win.on('resize', () => {
+    if (saveWindowBoundsTimeout) clearTimeout(saveWindowBoundsTimeout);
+    saveWindowBoundsTimeout = setTimeout(saveWindowBounds, 500);
+  });
+
+  win.on('move', () => {
+    if (saveWindowBoundsTimeout) clearTimeout(saveWindowBoundsTimeout);
+    saveWindowBoundsTimeout = setTimeout(saveWindowBounds, 500);
+  });
 
   return win;
 }
