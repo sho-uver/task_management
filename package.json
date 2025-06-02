@@ -2,7 +2,7 @@
   "name": "task_management",
   "version": "1.0.0",
   "description": "タスク管理と作業時間計測のためのデスクトップアプリケーション",
-  "main": "src/main/main.js",
+  "main": "src/main/main.ts",
   "directories": {
     "doc": "doc"
   },
@@ -52,6 +52,8 @@
     "@babel/preset-env": "^7.23.7",
     "@babel/preset-react": "^7.23.7",
     "@babel/preset-typescript": "^7.23.7",
+    "@types/electron": "^1.4.38",
+    "@types/node": "^22.15.29",
     "@types/react": "^18.2.47",
     "@types/react-dom": "^18.2.18",
     "@typescript-eslint/eslint-plugin": "^6.18.0",

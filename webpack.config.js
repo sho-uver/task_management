@@ -4,13 +4,16 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
   mode: process.env.NODE_ENV === 'development' ? 'development' : 'production',
   entry: './src/renderer/index.tsx',
-  target: 'web',
+  target: 'electron-renderer',
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'renderer.js',
   },
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.jsx'],
+  },
+  externals: {
+    electron: 'commonjs electron'
   },
   module: {
     rules: [
