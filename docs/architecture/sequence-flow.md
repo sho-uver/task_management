@@ -160,6 +160,157 @@ sequenceDiagram
     end
 ```
 
+## 画面遷移図
+```mermaid
+graph TD
+    Start[アプリケーション起動] --> Split{分岐}
+    Split --> N[Notionアプリ]
+    Split --> E[Electronアプリ]
+
+    %% Notion部分の画面遷移
+    N --> |メインメニューから選択| TM[チケット管理画面]
+    N --> |メインメニューから選択| SM[スケジュール管理画面]
+    N --> |メインメニューから選択| PM[定期タスク管理画面]
+
+    %% チケット管理画面の詳細遷移
+    TM --> |作成ボタンクリック| TC[チケット作成]
+    TM --> |チケットクリック| TD[チケット詳細]
+    TD --> |編集ボタンクリック| TE[チケット編集]
+    TD --> |子タスクボタンクリック| ST[子タスク管理]
+
+    %% スケジュール管理画面の詳細遷移
+    SM --> |日付クリック| DC[日付詳細]
+    SM --> |キャパシティボタン| CP[キャパシティ設定]
+    SM --> |自動スケジューリング| AS[自動スケジューリング実行]
+
+    %% 定期タスク管理画面の詳細遷移
+    PM --> |作成ボタンクリック| PC[定期タスク作成]
+    PM --> |タスククリック| PD[定期タスク詳細]
+    PD --> |編集ボタンクリック| PE[定期タスク編集]
+
+    %% Electron部分の画面遷移
+    E --> |常駐起動| DT[当日タスク表示]
+    DT --> |タスク選択| TS[タスクステータス管理]
+    TS --> |開始チェック| TT[時間計測]
+    TT --> |終了チェック/アイドル検知| TE2[計測終了]
+
+    %% スタイル定義
+    classDef notion fill:#f9f,stroke:#333,stroke-width:2px
+    classDef electron fill:#bbf,stroke:#333,stroke-width:2px
+    
+    %% スタイル適用
+    class N,TM,SM,PM,TC,TD,TE,ST,DC,CP,AS,PC,PD,PE notion
+    class E,DT,TS,TT,TE2 electron
+```
+
+### 画面遷移の説明
+1. アプリケーション起動時
+   - Notionアプリとelectronアプリが並行して起動
+   - 両アプリは独立して動作するが、データは連携
+
+2. Notion部分（メイン機能）
+   - メインメニューから3つの主要機能へアクセス
+     - チケット管理画面
+     - スケジュール管理画面
+     - 定期タスク管理画面
+   - 各機能内で詳細な操作が可能
+   - チケット、スケジュール、定期タスクの相互連携
+
+3. Electron部分（作業管理）
+   - 常駐型アプリケーションとして動作
+   - シンプルな操作フローで作業記録を実現
+   - 自動的なステータス管理と時間計測
+
+## アプリケーションフロー
+
+### タスク開始から計測までの流れ
+```mermaid
+sequenceDiagram
+    actor User as ユーザー
+    participant UI as ElectronUI
+    participant App as App
+    participant TM as TaskManager
+    participant TT as TimeTracker
+    participant ID as IdleDetector
+    participant NC as NotionClient
+    
+    User->>UI: タスク開始ボタンクリック
+    UI->>App: startTask(taskId)
+    App->>TM: updateTaskStatus(taskId, IN_PROGRESS)
+    TM->>NC: updateTask(taskId, status)
+    NC-->>TM: 更新完了
+    
+    App->>TT: startTracking(taskId)
+    TT->>ID: resetActivity()
+    TT->>TT: setActiveTask(taskId)
+    
+    loop 時間計測
+        ID->>ID: checkIdleStatus()
+        alt アイドル検知
+            ID->>TT: onIdle()
+            TT->>TT: pauseTracking()
+            TT->>UI: updateTimerDisplay(paused)
+        else アクティブ
+            ID->>TT: onActive()
+            TT->>TT: resumeTracking()
+            TT->>UI: updateTimerDisplay(active)
+        end
+    end
+```
+
+### タスク完了時の同期フロー
+```mermaid
+sequenceDiagram
+    actor User as ユーザー
+    participant UI as ElectronUI
+    participant App as App
+    participant TM as TaskManager
+    participant TT as TimeTracker
+    participant NC as NotionClient
+    
+    User->>UI: タスク完了ボタンクリック
+    UI->>App: completeTask(taskId)
+    
+    par 時間計測停止
+        App->>TT: stopTracking()
+        TT->>TT: calculateTotalTime()
+        TT->>App: return totalTime
+    and ステータス更新
+        App->>TM: updateTaskStatus(taskId, COMPLETED)
+    end
+    
+    App->>TM: updateTimeSpent(taskId, totalTime)
+    TM->>NC: syncTimeData(taskId, totalTime)
+    NC-->>TM: 同期完了
+    
+    TM->>UI: updateTaskList()
+    UI->>User: 完了表示
+```
+
+### アプリケーション起動時のデータ同期
+```mermaid
+sequenceDiagram
+    participant App as App
+    participant TM as TaskManager
+    participant NC as NotionClient
+    participant UI as ElectronUI
+    
+    App->>App: initialize()
+    App->>TM: initialize()
+    
+    par Notionデータ取得
+        TM->>NC: fetchTodayTasks()
+        NC-->>TM: return tasks
+        TM->>TM: processTasks()
+    and UI初期化
+        App->>UI: createWindow()
+        App->>UI: createTray()
+    end
+    
+    TM->>UI: renderTasks(tasks)
+    UI->>UI: setupEventListeners()
+```
+
 ## 主要な処理フローの説明
 
 ### アプリケーション起動時の処理
