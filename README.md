@@ -7,8 +7,8 @@
 
 ## 画面イメージ
 ### Electronアプリケーション  
-HTMLでコードも作っています。[こちら](doc/Layout_image/electron/index.html)を確認してください    
- ![Electronアプリケーションのレイアウト](doc/Layout_image/electron/screenshot.png)
+HTMLでコードも作っています。[こちら](docs/Layout_image/electron/index.html)を確認してください    
+ ![Electronアプリケーションのレイアウト](docs\Layout_image\electron\screenshot.png)
 
 ## プラットフォーム
 - Windows
