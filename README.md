@@ -49,6 +49,24 @@ HTMLでコードも作っています。[こちら](docs/Layout_image/electron/i
 - [開発ロードマップ](docs/development/roadmap.md) - 開発計画と進捗状況
 - [Notion API仕様](docs/development/notion-api.md) - Notion連携の技術仕様
 
+## Notion API Integration
+
+To use the Notion integration feature, you need to set up the following environment variables:
+
+1. Create a `.env` file in the root directory
+2. Add the following variables:
+   ```
+   NOTION_API_KEY=your_notion_api_key_here
+   NOTION_DATABASE_ID=your_notion_database_id_here
+   ```
+
+To get these values:
+1. Go to [Notion Developers](https://developers.notion.com/)
+2. Create a new integration
+3. Copy the API key
+4. Share your Notion database with the integration
+5. Copy the database ID from the database URL
+
 ## クイックスタート
 1. 必要な環境
    - Node.js (v16以上)

@@ -111,10 +111,24 @@ const TaskList: React.FC = () => {
    * タスクの完了（削除）
    * @param task 完了するタスク
    */
-  const handleComplete = useCallback((task: Task): void => {
-    const updatedTasks = tasks.filter(t => t.id !== task.id);
-    saveTasks(updatedTasks);
-  }, [tasks]);
+  const handleComplete = useCallback(async (task: Task): Promise<void> => {
+    try {
+      // タスクの完了処理をメインプロセスに依頼
+      const success = await ipcRenderer.invoke('complete-task', task.id);
+      
+      if (success) {
+        // タスクリストを再読み込み
+        await loadTasks();
+        console.log(`Task ${task.id} completed successfully`);
+      } else {
+        throw new Error('Failed to complete task');
+      }
+    } catch (error) {
+      console.error('Failed to complete task:', error);
+      setError('タスクの完了処理に失敗しました');
+      throw error; // エラーを上位に伝播
+    }
+  }, [loadTasks]);
 
   /**
    * タスクの編集開始
